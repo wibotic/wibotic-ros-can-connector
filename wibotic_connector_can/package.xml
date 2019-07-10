@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>wibotic_connector_can</name>
+  <version>0.0.1</version>
+  <description>The wibotic_connector_can package</description>
+  <maintainer email="info@wibotic.com">WiBotic Inc.</maintainer>
+
+  <license>TODO</license>
+  <url type="website">https://www.wibotic.com</url>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>python-future</exec_depend>
+  <exec_depend>uavcan-pip</exec_depend>
+  <exec_depend>wibotic_msg</exec_depend>
+
+  <export>
+  </export>
+</package>

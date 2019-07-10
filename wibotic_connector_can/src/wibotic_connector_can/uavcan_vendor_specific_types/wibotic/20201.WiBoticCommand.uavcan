@@ -1,0 +1,14 @@
+#
+# WiBotic Commands
+#
+
+#
+# Command 
+# This can be a code for a specific handler that will route the command properly for you.
+#
+uint16 command
+
+#
+# Payload 
+#
+uint32 payload
