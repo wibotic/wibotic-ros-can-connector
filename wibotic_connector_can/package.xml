@@ -4,9 +4,9 @@
   <version>0.0.1</version>
   <description>The wibotic_connector_can package</description>
   <maintainer email="info@wibotic.com">WiBotic Inc.</maintainer>
-
-  <license>TODO</license>
+  <license>BSD 3-Clause</license>
   <url type="website">https://www.wibotic.com</url>
+
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>

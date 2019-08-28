@@ -1,4 +1,4 @@
-uint32 param_id
+string name
 ---
 uint8 status
 int64 value

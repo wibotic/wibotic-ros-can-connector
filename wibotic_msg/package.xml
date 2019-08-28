@@ -4,8 +4,8 @@
   <version>0.0.1</version>
   <description>The wibotic_msg package</description>
   <maintainer email="info@wibotic.com">WiBotic Inc.</maintainer>
-  <license>TODO</license>
-  <url type="website">http://www.wibotic.com</url>
+  <license>BSD 3-Clause</license>
+  <url type="website">https://www.wibotic.com</url>
 
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>

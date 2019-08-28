@@ -21,6 +21,8 @@ add_service_files(
   FILES
   ReadParameter.srv
   WriteParameter.srv
+  ListParameters.srv
+  SaveParameters.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
