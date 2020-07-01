@@ -1,0 +1,7 @@
+<launch>
+  <node name="wibotic_connector_can" pkg="wibotic_connector_can" type="wiboticros.py" output="screen">
+    <param name="can_interface" value="can0" type="str" />
+    <param name="uavcan_node_id" value="18" type="int" />
+  </node>
+</launch>
+
