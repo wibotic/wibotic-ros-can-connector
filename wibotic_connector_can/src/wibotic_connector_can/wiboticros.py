@@ -59,6 +59,20 @@ class ROSNodeThread(threading.Thread):
                 rospy.loginfo(packaged_data)
                 pub.publish(packaged_data)
 
+        @staticmethod
+        def get_incoming_param():
+            try:
+                response = _uav_incoming_param.get(
+                    block=True,
+                    timeout=PARAMETER_REQ_TIMEOUT,
+                )
+            except queue.Empty:
+                return FAILURE
+
+            if uavcan.get_active_union_field(response.value) == "empty":
+                return "empty"
+            return response
+
         def handle_param_list(self, req):
             params = []
             index = 0
@@ -66,35 +80,24 @@ class ROSNodeThread(threading.Thread):
             while True:
                 request = uavcan.protocol.param.GetSet.Request(index=index)
                 _uav_outgoing.put(request)
-                try:
-                    response = _uav_incoming_param.get(
-                        block=True,
-                        timeout=PARAMETER_REQ_TIMEOUT,
-                    )
-                    if uavcan.get_active_union_field(response.value) != "empty":
-                        params.append(ascii_list_to_str(response.name))
-                        index += 1
-                        rospy.loginfo(index)
-                    else:
-                        return [SUCCESS, params]
-                except queue.Empty:
+                response = self.get_incoming_param()
+                if response not in [FAILURE, "empty"]:
+                    params.append(ascii_list_to_str(response.name))
+                    index += 1
+                    rospy.loginfo(index)
+                elif response == "empty":
+                    return [SUCCESS, params]
+                else:
                     return [FAILURE, params]
 
         def handle_param_read(self, req):
             request = uavcan.protocol.param.GetSet.Request(name=req.name)
             _uav_outgoing.put(request)
-            try:
-                response = _uav_incoming_param.get(
-                    block=True,
-                    timeout=PARAMETER_REQ_TIMEOUT,
-                )
-                if uavcan.get_active_union_field(response.value) != "empty":
-                    status = SUCCESS if response.name == req.name else FAILURE
-                    value = response.value.integer_value
-                    return [status, value]
-            except queue.Empty:
-                pass
-
+            response = self.get_incoming_param()
+            if response not in [FAILURE, "empty"]:
+                status = SUCCESS if response.name == req.name else FAILURE
+                value = response.value.integer_value
+                return [status, value]
             return [FAILURE, 0]
 
         def handle_param_write(self, req):
@@ -103,20 +106,10 @@ class ROSNodeThread(threading.Thread):
                 value=uavcan.protocol.param.Value(integer_value=req.value),
             )
             _uav_outgoing.put(request)
-            try:
-                response = _uav_incoming_param.get(
-                    block=True,
-                    timeout=PARAMETER_REQ_TIMEOUT,
-                )
-                if uavcan.get_active_union_field(response.value) != "empty":
-                    return (
-                        SUCCESS
-                        if response.value.integer_value == req.value
-                        else FAILURE
-                    )
-            except queue.Empty:
-                pass
-
+            response = self.get_incoming_param()
+            if response not in [FAILURE, "empty"]:
+                if response.value.integer_value == req.value:
+                    return SUCCESS
             return FAILURE
 
         def handle_param_save(self, req):
@@ -124,14 +117,11 @@ class ROSNodeThread(threading.Thread):
                 opcode=uavcan.protocol.param.ExecuteOpcode.Request().OPCODE_SAVE
             )
             _uav_outgoing.put(request)
-            try:
-                response = _uav_incoming_param.get(
-                    block=True,
-                    timeout=PARAMETER_REQ_TIMEOUT,
-                )
-                return SUCCESS if response.ok else FAILURE
-            except queue.Empty:
-                return FAILURE
+            response = self.get_incoming_param()
+            if response not in [FAILURE, "empty"]:
+                if response.ok:
+                    return SUCCESS
+            return FAILURE
 
     def __init__(self):
         rospy.init_node("wibotic_connector_can")
