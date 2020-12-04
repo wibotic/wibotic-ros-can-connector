@@ -16,10 +16,7 @@ import sys
 import os
 
 # Global state and constants shared between threads
-DSDL_PATH = (
-    os.path.dirname(__file__)
-    + "/uavcan_vendor_specific_types/wibotic"
-)
+DSDL_PATH = os.path.dirname(__file__) + "/uavcan_vendor_specific_types/wibotic"
 WIBOTIC_NODE_NAME = "com.wibotic.charger"
 PARAMETER_REQ_TIMEOUT = 3
 SUCCESS = 5
@@ -54,17 +51,11 @@ class ROSNodeThread(threading.Thread):
             )
             while not rospy.is_shutdown():
                 incoming_data = _uav_incoming_info.get()
-                uavcan_dsdl_type = uavcan.get_uavcan_data_type(
-                    incoming_data
-                )
+                uavcan_dsdl_type = uavcan.get_uavcan_data_type(incoming_data)
                 unpacked_data = {}
                 for field in uavcan_dsdl_type.fields:
-                    unpacked_data[field.name] = getattr(
-                        incoming_data, field.name
-                    )
-                packaged_data = msg.WiBoticInfo(
-                    **unpacked_data
-                )
+                    unpacked_data[field.name] = getattr(incoming_data, field.name)
+                packaged_data = msg.WiBoticInfo(**unpacked_data)
                 rospy.loginfo(packaged_data)
                 pub.publish(packaged_data)
 
@@ -73,24 +64,15 @@ class ROSNodeThread(threading.Thread):
             index = 0
             ClearQueue(_uav_incoming_param)
             while True:
-                request = uavcan.protocol.param.GetSet.Request(
-                    index=index
-                )
+                request = uavcan.protocol.param.GetSet.Request(index=index)
                 _uav_outgoing.put(request)
                 try:
                     response = _uav_incoming_param.get(
                         block=True,
                         timeout=PARAMETER_REQ_TIMEOUT,
                     )
-                    if (
-                        uavcan.get_active_union_field(
-                            response.value
-                        )
-                        != "empty"
-                    ):
-                        params.append(
-                            ascii_list_to_str(response.name)
-                        )
+                    if uavcan.get_active_union_field(response.value) != "empty":
+                        params.append(ascii_list_to_str(response.name))
                         index += 1
                         rospy.loginfo(index)
                     else:
@@ -99,26 +81,15 @@ class ROSNodeThread(threading.Thread):
                     return [FAILURE, params]
 
         def handle_param_read(self, req):
-            request = uavcan.protocol.param.GetSet.Request(
-                name=req.name
-            )
+            request = uavcan.protocol.param.GetSet.Request(name=req.name)
             _uav_outgoing.put(request)
             try:
                 response = _uav_incoming_param.get(
                     block=True,
                     timeout=PARAMETER_REQ_TIMEOUT,
                 )
-                if (
-                    uavcan.get_active_union_field(
-                        response.value
-                    )
-                    != "empty"
-                ):
-                    status = (
-                        SUCCESS
-                        if response.name == req.name
-                        else FAILURE
-                    )
+                if uavcan.get_active_union_field(response.value) != "empty":
+                    status = SUCCESS if response.name == req.name else FAILURE
                     value = response.value.integer_value
                     return [status, value]
             except queue.Empty:
@@ -129,9 +100,7 @@ class ROSNodeThread(threading.Thread):
         def handle_param_write(self, req):
             request = uavcan.protocol.param.GetSet.Request(
                 name=req.name,
-                value=uavcan.protocol.param.Value(
-                    integer_value=req.value
-                ),
+                value=uavcan.protocol.param.Value(integer_value=req.value),
             )
             _uav_outgoing.put(request)
             try:
@@ -139,16 +108,10 @@ class ROSNodeThread(threading.Thread):
                     block=True,
                     timeout=PARAMETER_REQ_TIMEOUT,
                 )
-                if (
-                    uavcan.get_active_union_field(
-                        response.value
-                    )
-                    != "empty"
-                ):
+                if uavcan.get_active_union_field(response.value) != "empty":
                     return (
                         SUCCESS
-                        if response.value.integer_value
-                        == req.value
+                        if response.value.integer_value == req.value
                         else FAILURE
                     )
             except queue.Empty:
@@ -211,9 +174,7 @@ class UAVCanNodeThread(threading.Thread):
 
         def __init__(self, can_interface, node_id):
             uavcan.load_dsdl(DSDL_PATH)
-            node_info = (
-                uavcan.protocol.GetNodeInfo.Response()
-            )
+            node_info = uavcan.protocol.GetNodeInfo.Response()
             node_info.name = "com.wibotic.ros_connector"
             node_info.software_version.major = 1
             try:
@@ -229,9 +190,7 @@ class UAVCanNodeThread(threading.Thread):
                     "Please confirm the device name is correctly set!"
                 )
             else:
-                self.monitor = uavcan.app.node_monitor.NodeMonitor(
-                    self.uavcan_node
-                )
+                self.monitor = uavcan.app.node_monitor.NodeMonitor(self.uavcan_node)
                 self.uavcan_node.add_handler(
                     uavcan.thirdparty.wibotic.WiBoticInfo,
                     self.wibotic_info_callback,
@@ -240,9 +199,7 @@ class UAVCanNodeThread(threading.Thread):
         def get_wibotic_node_id(self):
             online_nodes = self.monitor.get_all_node_id()
             for node_id in online_nodes:
-                node_name = ascii_list_to_str(
-                    self.monitor.get(node_id).info.name
-                )
+                node_name = ascii_list_to_str(self.monitor.get(node_id).info.name)
                 if node_name == WIBOTIC_NODE_NAME:
                     return node_id
             return None
@@ -266,9 +223,7 @@ class UAVCanNodeThread(threading.Thread):
                         self.wibotic_param_callback,
                     )
                 else:
-                    rospy.logwarn(
-                        "No WiBotic device found on bus"
-                    )
+                    rospy.logwarn("No WiBotic device found on bus")
 
         def check_shutdown(self):
             if _shutting_down:
@@ -291,12 +246,8 @@ class UAVCanNodeThread(threading.Thread):
         node = UAVCanNodeThread.Node(can_interface, node_id)
         try:
             # Thread implicitly daemonic since parent thread is daemonic
-            threading.Thread(
-                target=node.send_pending
-            ).start()
-            node.uavcan_node.periodic(
-                1, node.check_shutdown
-            )
+            threading.Thread(target=node.send_pending).start()
+            node.uavcan_node.periodic(1, node.check_shutdown)
             node.uavcan_node.spin()
         except uavcan.UAVCANException as e:
             rospy.logerr(e)
