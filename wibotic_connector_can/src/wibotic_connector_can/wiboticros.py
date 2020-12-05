@@ -47,7 +47,8 @@ class Shutdown(Exception):
 
 class ROSNodeThread(threading.Thread):
     class Node:
-        def sender(self):
+        @staticmethod
+        def sender():
             pub = rospy.Publisher(
                 "~wibotic_info",
                 msg.WiBoticInfo,
@@ -129,7 +130,8 @@ class ROSNodeThread(threading.Thread):
         super(ROSNodeThread, self).__init__()
         self.daemon = True
 
-    def run(self):
+    @staticmethod
+    def run():
         rospy.loginfo("ROS Thread Initialized")
         node = ROSNodeThread.Node()
         try:
@@ -195,7 +197,8 @@ class UAVCanNodeThread(threading.Thread):
                     return node_id
             return None
 
-        def wibotic_info_callback(self, event):
+        @staticmethod
+        def wibotic_info_callback(event):
             _uav_incoming_info.put(event.transfer.payload)
 
         def wibotic_param_callback(self, event):
@@ -225,7 +228,8 @@ class UAVCanNodeThread(threading.Thread):
         super(UAVCanNodeThread, self).__init__()
         self.daemon = True
 
-    def run(self):
+    @staticmethod
+    def run():
         rospy.loginfo("UAVCAN Thread Initialized")
 
         if not rospy.has_param("~can_interface"):
