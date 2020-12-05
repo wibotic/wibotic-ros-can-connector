@@ -2,18 +2,19 @@
 
 # use `pip install future uavcan` before running on python 2
 
-# ROS Imports
-import rospy
-from wibotic_msg import msg, srv
-
 # Other Imports
-import uavcan
-import threading
+import os
+import sys
 import time
 import queue
 import signal
-import sys
-import os
+import threading
+
+# ROS Imports
+import rospy
+import uavcan
+
+from wibotic_msg import msg, srv
 
 # Global state and constants shared between threads
 DSDL_PATH = os.path.dirname(__file__) + "/uavcan_vendor_specific_types/wibotic"
