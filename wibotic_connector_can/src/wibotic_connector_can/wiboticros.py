@@ -61,7 +61,8 @@ class ROSNodeThread(threading.Thread):
                 pub.publish(packaged_data)
 
         @staticmethod
-        def get_incoming_param():
+        def request_param(request):
+            _uav_outgoing.put(request)
             try:
                 response = _uav_incoming_param.get(
                     block=True,
@@ -80,8 +81,7 @@ class ROSNodeThread(threading.Thread):
             ClearQueue(_uav_incoming_param)
             while True:
                 request = uavcan.protocol.param.GetSet.Request(index=index)
-                _uav_outgoing.put(request)
-                response = self.get_incoming_param()
+                response = self.request_param(request=request)
                 if response not in [FAILURE, "empty"]:
                     params.append(ascii_list_to_str(response.name))
                     index += 1
@@ -93,8 +93,7 @@ class ROSNodeThread(threading.Thread):
 
         def handle_param_read(self, req):
             request = uavcan.protocol.param.GetSet.Request(name=req.name)
-            _uav_outgoing.put(request)
-            response = self.get_incoming_param()
+            response = self.request_param(request=request)
             if response not in [FAILURE, "empty"]:
                 status = SUCCESS if response.name == req.name else FAILURE
                 value = response.value.integer_value
@@ -106,8 +105,7 @@ class ROSNodeThread(threading.Thread):
                 name=req.name,
                 value=uavcan.protocol.param.Value(integer_value=req.value),
             )
-            _uav_outgoing.put(request)
-            response = self.get_incoming_param()
+            response = self.request_param(request=request)
             if response not in [FAILURE, "empty"]:
                 if response.value.integer_value == req.value:
                     return SUCCESS
@@ -117,8 +115,7 @@ class ROSNodeThread(threading.Thread):
             request = uavcan.protocol.param.ExecuteOpcode.Request(
                 opcode=uavcan.protocol.param.ExecuteOpcode.Request().OPCODE_SAVE
             )
-            _uav_outgoing.put(request)
-            response = self.get_incoming_param()
+            response = self.request_param(request=request)
             if response not in [FAILURE, "empty"]:
                 if response.ok:
                     return SUCCESS
