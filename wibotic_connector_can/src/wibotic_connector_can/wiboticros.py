@@ -29,9 +29,12 @@ _threads = []
 _shutting_down = False
 
 
-def ClearQueue(q):
-    while not q.empty():
-        q.get()
+def clear_queue(q):
+    try:
+        while True:
+            q.get_nowait()
+    except q.Empty:
+        pass
 
 
 def ascii_list_to_str(l):
@@ -78,7 +81,7 @@ class ROSNodeThread(threading.Thread):
         def handle_param_list(self, *_):
             params = []
             index = 0
-            ClearQueue(_uav_incoming_param)
+            clear_queue(_uav_incoming_param)
             while True:
                 request = uavcan.protocol.param.GetSet.Request(index=index)
                 response = self.request_param(request=request)
