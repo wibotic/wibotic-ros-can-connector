@@ -75,7 +75,7 @@ class ROSNodeThread(threading.Thread):
                 return "empty"
             return response
 
-        def handle_param_list(self, req):
+        def handle_param_list(self, *_):
             params = []
             index = 0
             ClearQueue(_uav_incoming_param)
@@ -111,7 +111,7 @@ class ROSNodeThread(threading.Thread):
                     return SUCCESS
             return FAILURE
 
-        def handle_param_save(self, req):
+        def handle_param_save(self, *_):
             request = uavcan.protocol.param.ExecuteOpcode.Request(
                 opcode=uavcan.protocol.param.ExecuteOpcode.Request().OPCODE_SAVE
             )
@@ -244,7 +244,7 @@ class UAVCanNodeThread(threading.Thread):
         rospy.loginfo("UAVCAN Thread Finished")
 
 
-def graceful_shutdown(signal, frame):
+def graceful_shutdown(*_):
     global _shutting_down
     if not _shutting_down:
         rospy.loginfo("Shutting Down")
