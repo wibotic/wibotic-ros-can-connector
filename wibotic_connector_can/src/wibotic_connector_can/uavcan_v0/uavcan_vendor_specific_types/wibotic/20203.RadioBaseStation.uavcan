@@ -1,0 +1,6 @@
+#
+# Describes a radio base station that has been seen
+#
+
+uint64 unique_id
+uint8 rssi
