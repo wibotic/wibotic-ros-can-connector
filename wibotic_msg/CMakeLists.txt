@@ -35,7 +35,6 @@ generate_messages(
 ## catkin specific configuration ##
 ###################################
 catkin_package(
- LIBRARIES wibotic_msgs
  CATKIN_DEPENDS std_msgs message_runtime
 )
 
