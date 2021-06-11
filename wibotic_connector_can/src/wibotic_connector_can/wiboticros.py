@@ -18,7 +18,7 @@ import os
 # Global state and constants shared between threads
 DSDL_PATH = (
     os.path.dirname(__file__)
-    + "/uavcan_vendor_specific_types/wibotic"
+    + "/uavcan_v0/uavcan_vendor_specific_types/wibotic"
 )
 WIBOTIC_NODE_NAME = "com.wibotic.charger"
 PARAMETER_REQ_TIMEOUT = 3
