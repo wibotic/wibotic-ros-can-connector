@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-# use `pip install future uavcan` before running on python 2
+# use `pip install future pyuavcan_v0` before running on python 2
 
 # ROS Imports
 import rospy
 from wibotic_msg import msg, srv
 
 # Other Imports
-import uavcan
+import pyuavcan_v0 as uavcan
 import threading
 import time
 import queue
