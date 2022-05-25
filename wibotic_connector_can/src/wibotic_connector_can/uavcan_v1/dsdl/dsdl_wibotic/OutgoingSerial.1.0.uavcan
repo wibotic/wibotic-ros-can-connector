@@ -1,0 +1,11 @@
+# Outgoing serial packets are written as a service type to allow for RPC
+# like behavior
+
+uint12 CAPACITY_BYTES = 48
+uint8[<=CAPACITY_BYTES] payload
+
+@sealed
+
+---
+
+@sealed
