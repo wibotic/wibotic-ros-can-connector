@@ -1,0 +1,31 @@
+#
+# WiBotic periodic information.
+#
+
+#
+# Primary parameters.
+# Some fields can be set to NAN if their values are unknown.
+#
+uavcan.si.unit.voltage.Scalar.1.0 VMonBatt
+uavcan.si.unit.electric_current.Scalar.1.0 IBattery
+uavcan.si.unit.voltage.Scalar.1.0 VRect
+uavcan.si.unit.voltage.Scalar.1.0 VMonCharger
+uavcan.si.unit.electric_current.Scalar.1.0 TargetIBatt
+uavcan.si.unit.electric_current.Scalar.1.0 ICharger
+float32 TBoard
+
+uint8 CHARGER_STATE_IDLE = 0
+uint8 CHARGER_STATE_RAMP_UP = 1
+uint8 CHARGER_STATE_CC_CHARGE = 2
+uint8 CHARGER_STATE_CV_CHARGE = 3
+uint8 CHARGER_STATE_CHG_COMPLETE = 4
+uint8 CHARGER_STATE_STOPPING = 5
+uint8 CHARGER_STATE_ALARM = 6
+uint8 CHARGER_STATE_CHECK_VOLT = 7
+uint8 CHARGER_STATE_RECOVERY = 8
+uint8 CHARGER_STATE_FATAL = 9
+uint8 CHARGER_STATE_POWER_SUPPLY = 10
+uint8 CHARGER_STATE_NEGATIVE_DELTA_V = 11
+uint8 ChargerState
+
+@extent 64 * 8

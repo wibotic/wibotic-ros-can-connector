@@ -1,0 +1,7 @@
+# Node ID of the intended recipient. 255 to send to all nodes
+uint8 destination
+
+uint12 CAPACITY_BYTES = 48
+uint8[<=CAPACITY_BYTES] payload
+
+@sealed
